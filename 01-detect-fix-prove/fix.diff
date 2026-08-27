@@ -1,0 +1,39 @@
+diff --git a/app.js b/app.js
+index eb95982..28510dc 100644
+--- a/app.js
++++ b/app.js
+@@ -17,13 +17,22 @@ app.get('/api/health', (req, res) => {
+   res.json({ status: 'ok' });
+ });
+
+-// Real bug, on purpose: no check that `name` was actually provided before
+-// calling .toUpperCase() on it. A request to /api/greet with no ?name=
+-// throws a real TypeError — this is the one thing this app exists to do.
++// Fix: `name` is an optional query parameter and may be undefined if the
++// client does not provide `?name=`. Calling `.toUpperCase()` directly on it
++// caused a TypeError. We now validate that `name` exists and is a
++// non-empty string before using it, and return a 400 Bad Request with a
++// clear error message when it is missing or invalid.
+ app.get('/api/greet', (req, res) => {
+-  const name = req.query.name;
++  const { name } = req.query;
++
++  if (typeof name !== 'string' || name.trim().length === 0) {
++    return res.status(400).json({
++      error: 'Missing or invalid "name" query parameter. Usage: /api/greet?name=YourName',
++    });
++  }
++
+   const greeting = 'Hello, ' + name.toUpperCase() + '!';
+-  res.json({ greeting });
++  return res.json({ greeting });
+ });
+
+ if (debugexpress) {
+@@ -37,4 +46,4 @@ if (require.main === module) {
+   });
+ }
+
+-module.exports = app;
++module.exports = app;
+\ No newline at end of file
