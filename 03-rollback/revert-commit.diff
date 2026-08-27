@@ -1,0 +1,56 @@
+Note on this file: the revert commit itself (4504e11) has an empty diff
+against its immediate parent. That's not an error — it's a real artifact
+of how this specific test was sequenced: by the time the revert landed,
+the working tree had already been manually re-broken to trigger the
+recurrence, so its content already matched what the revert restored it to.
+The commit itself, with its message, is still real and still in the repo's
+history (see rollback-trigger.md for the exact commit message).
+
+What's below is the diff that actually shows what got undone: the
+deployed, working fix (merge commit 3173fb218...) versus the reverted
+state (4504e11) — i.e. what a real "the fix got rolled back" comparison
+looks like.
+
+diff --git a/app.js b/app.js
+index 459e305..049f9b8 100644
+--- a/app.js
++++ b/app.js
+@@ -17,35 +17,10 @@ app.get('/api/health', (req, res) => {
+   res.json({ status: 'ok' });
+ });
+
+-/**
+- * GET /api/greet
+- * Greets a user by name, provided via the `name` query parameter.
+- *
+- * Fix: The original code assumed `req.query.name` was always a defined
+- * string and called `.toUpperCase()` on it directly, which threw a
+- * TypeError when the parameter was missing (undefined). We now validate
+- * that `name` exists and is a non-empty string before calling
+- * `.toUpperCase()`. If validation fails, we return a 400 Bad Request
+- * response with a descriptive error message instead of crashing.
+- */
+ app.get('/api/greet', (req, res) => {
+-  const { name } = req.query;
+-
+-  // Validate that `name` is present and is a non-empty string.
+-  if (typeof name !== 'string' || name.trim().length === 0) {
+-    return res.status(400).json({
+-      error: 'Missing or invalid required query parameter: "name". It must be a non-empty string.',
+-    });
+-  }
+-
+-  try {
+-    const greeting = 'Hello, ' + name.toUpperCase() + '!';
+-    return res.json({ greeting });
+-  } catch (err) {
+-    // Defensive catch in case of unexpected runtime errors.
+-    console.error('Error processing /api/greet request:', err);
+-    return res.status(500).json({ error: 'Internal server error' });
+-  }
++  const name = req.query.name;
++  const greeting = 'Hello, ' + name.toUpperCase() + '!';
++  res.json({ greeting });
+ });
+
+ if (debugexpress) {
