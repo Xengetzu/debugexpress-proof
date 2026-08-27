@@ -1,0 +1,10 @@
+Real email received after a fix deployed. Redacted only for the recipient
+address, per this repo's redaction rule — everything else is unmodified.
+
+From:    notifications@mail.getdebugexpress.com
+To:      [redacted]
+Subject: [WordExpress] ✓ Fix Deployed Successfully
+
+The fix has been deployed successfully.
+
+Error resolved: TypeError: Cannot read properties of undefined (reading 'toUpperCase')
