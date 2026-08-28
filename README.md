@@ -42,5 +42,3 @@ This repo contains no DeBugExpress application code — no triage/fix/review
 pipeline source, no server code, no deployment configuration, no API
 integration code. It's evidence, not a working copy of the product, and it
 can't be run, deployed, or connected to anything real.
-
-The actual product lives at [getdebugexpress.com](https://getdebugexpress.com).
